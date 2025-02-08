@@ -1,10 +1,9 @@
 library(shiny)
 
-MEAN = 3.785  # in liter
-SD = 0.1
-
 # Define UI for the app
 ui <- fluidPage(
+  
+  tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")),
   
   titlePanel(HTML("<h1 
                   style='font-size: 28px; 
@@ -56,7 +55,7 @@ server <- function(input, output) {
   
   # Generate a new batch when the button is clicked
   observeEvent(input$generate, {
-    batch_volumes$data <- rnorm(n=200, mean = MEAN, sd = SD)  # Generate batch of 200 bottles
+    batch_volumes$data <- rnorm(n=200, mean = 3.70, sd = 0.05)  # Generate batch of 200 bottles
     clicked_bottles$selected <- rep(FALSE, 200)  # Reset click tracking
     volumes$data <- data.frame(Sample = integer(), Bottle = integer(), Volume = numeric())  # Clear table
     volumes$counter <- 0  # Reset counter
