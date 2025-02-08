@@ -2,9 +2,7 @@ library(shiny)
 
 # Define UI for the app
 ui <- fluidPage(
-  
-  tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")),
-  
+
   titlePanel(HTML("<h1 
                   style='font-size: 28px; 
                   font-family: Arial, sans-serif; 
