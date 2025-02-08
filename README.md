@@ -17,8 +17,5 @@ Run `shiny::runGitHub('Filling-Machine', 'm-fili')`
 
 
 
-### Demo:
-
-
 
 
