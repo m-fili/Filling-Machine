@@ -41,10 +41,15 @@ ui <- fluidPage(
 server <- function(input, output) {
   # Reactive value to store the batch volumes persistently
   batch_volumes <- reactiveValues(data = NULL)
+  batch_cof <- reactiveValues(data = NULL)
   
   # Reactive value to store the sampled bottles' volumes
   volumes <- reactiveValues(
-    data = data.frame(Sample = integer(), Bottle = integer(), Volume = numeric()),
+    data = data.frame(
+      Sample = integer(), 
+      Bottle = integer(), 
+      Volume = numeric(),
+      COF = numeric()),
     counter = 0
   )
   
@@ -54,8 +59,13 @@ server <- function(input, output) {
   # Generate a new batch when the button is clicked
   observeEvent(input$generate, {
     batch_volumes$data <- rnorm(n=200, mean = 3.70, sd = 0.05)  # Generate batch of 200 bottles
+    batch_cof$data <- rnorm(n=200, mean = 0.3, sd = 0.01)
     clicked_bottles$selected <- rep(FALSE, 200)  # Reset click tracking
-    volumes$data <- data.frame(Sample = integer(), Bottle = integer(), Volume = numeric())  # Clear table
+    volumes$data <- data.frame(
+      Sample = integer(), 
+      Bottle = integer(), 
+      Volume = numeric(),
+      COF = numeric())  # Clear table
     volumes$counter <- 0  # Reset counter
   })
   
@@ -109,7 +119,8 @@ server <- function(input, output) {
               volumes$data <- rbind(volumes$data, data.frame(
                 Sample = paste0("#", volumes$counter),
                 Bottle = as.integer(bottle_number),  
-                Volume = round(batch_volumes$data[bottle_number], 3)
+                Volume = round(batch_volumes$data[bottle_number], 3),
+                COF = round(batch_cof$data[bottle_number], 3)
               ))
             }
           }
