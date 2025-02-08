@@ -19,6 +19,8 @@ ui <- fluidPage(
       br(),
       br(),
       textOutput("instruction"),
+      br(),
+      textOutput("teamNumberDisplay"),  # Show team number after input
       fluidRow(column(6, offset = 3, tableOutput("measurements")))
     ),
     
@@ -39,6 +41,32 @@ ui <- fluidPage(
 
 # Define server logic
 server <- function(input, output) {
+  
+  teamNumber <- reactiveVal(NULL)
+  
+  # Show pop-up when the app opens
+  observe({
+    showModal(modalDialog(
+      title = "Enter Your Team Number",
+      numericInput("teamInput", "Team Number:", value = NULL, min = 1, step = 1),
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("confirmTeam", "Submit")
+      ),
+      easyClose = FALSE, # Prevent closing without input
+      fade = TRUE
+    ))
+  })
+  
+  # Store team number and close modal when confirmed
+  observeEvent(input$confirmTeam, {
+    if (!is.null(input$teamInput) && input$teamInput > 0 && input$teamInput <=6) {
+      teamNumber(input$teamInput)
+      removeModal()
+    }
+  })
+  
+  
   # Reactive value to store the batch volumes persistently
   batch_volumes <- reactiveValues(data = NULL)
   batch_cof <- reactiveValues(data = NULL)
@@ -58,6 +86,7 @@ server <- function(input, output) {
   
   # Generate a new batch when the button is clicked
   observeEvent(input$generate, {
+    set.seed(input$teamInput)
     batch_volumes$data <- rnorm(n=200, mean = 3.70, sd = 0.05)  # Generate batch of 200 bottles
     batch_cof$data <- rnorm(n=200, mean = 0.3, sd = 0.01)
     clicked_bottles$selected <- rep(FALSE, 200)  # Reset click tracking
@@ -157,6 +186,15 @@ server <- function(input, output) {
       "Click on a bottle to measure its volume."
     } else {
       paste0("You have measured ", nrow(volumes$data), " bottles. Click more or reset.")
+    }
+  })
+  
+  # Display the team number in the sidebar
+  output$teamNumberDisplay <- renderText({
+    if (!is.null(teamNumber())) {
+      paste("Team Number:", teamNumber())
+    } else {
+      "Waiting for team number..."
     }
   })
 }
